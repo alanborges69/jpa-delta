@@ -4,6 +4,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.Assert.*;
 
+import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Test;
 
@@ -11,6 +12,8 @@ import br.edu.faculdadedelta.util.JPAUtil;
 
 public class JPAUtilTest {
 
+	private static final Logger LOGGER = Logger.getLogger(JPAUtilTest.class);
+	
 	@Test
 	public void deveInstanciarEntityManager() {
 		EntityManager em = JPAUtil.INSTANCE.getEntityManager();
@@ -35,7 +38,7 @@ public class JPAUtilTest {
 	
 	@AfterClass
 	public static void fecharFactory() {
-		System.out.println("Fechando factory...");
+		LOGGER.debug("fechando entity manager factory...");
 		
 		JPAUtil.INSTANCE.close();
 	}
