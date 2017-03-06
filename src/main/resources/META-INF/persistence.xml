@@ -9,6 +9,8 @@
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
 		<class>br.edu.faculdadedelta.modelo.Produto</class>
+		<class>br.edu.faculdadedelta.modelo.Cliente</class>
+		<class>br.edu.faculdadedelta.modelo.Venda</class>
 
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:h2:mem:jpadelta" />
