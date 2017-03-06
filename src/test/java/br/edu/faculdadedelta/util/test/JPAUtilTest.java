@@ -4,9 +4,7 @@ import javax.persistence.EntityManager;
 
 import static org.junit.Assert.*;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,8 +12,6 @@ import br.edu.faculdadedelta.util.JPAUtil;
 
 public class JPAUtilTest {
 
-	private static final Logger LOGGER = Logger.getLogger(JPAUtilTest.class);
-	
 	private EntityManager em;
 	
 	@Before
@@ -39,7 +35,7 @@ public class JPAUtilTest {
 	public void deveFecharEntityManager() {
 		em.close();
 		
-		assertFalse("instância do EntityManager não deve estar nula", em.isOpen());
+		assertFalse("instância do EntityManager deve estar fechada", em.isOpen());
 	}
 	
 	@Test
@@ -49,12 +45,5 @@ public class JPAUtilTest {
 		em.getTransaction().begin();
 		
 		assertTrue("transação deve estar aberta", em.getTransaction().isActive());
-	}
-	
-	@AfterClass
-	public static void fecharFactory() {
-		LOGGER.debug("fechando entity manager factory...");
-		
-		JPAUtil.INSTANCE.close();
 	}
 }
