@@ -44,35 +44,39 @@ public class Produto extends BaseEntity<Long> {
 		this.nome = nome;
 	}
 
-	public Long getId() {
-		return id;
+	public Produto(Long id) {
+		super();
+		this.id = id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getId() {
+		return id;
 	}
 
 	public String getNome() {
 		return nome;
 	}
 
-	public void setNome(String nome) {
+	public Produto setNome(String nome) {
 		this.nome = nome;
+		return this;
 	}
 
 	public String getFabricante() {
 		return fabricante;
 	}
 
-	public void setFabricante(String fabricante) {
+	public Produto setFabricante(String fabricante) {
 		this.fabricante = fabricante;
+		return this;
 	}
 
 	public Date getValidade() {
 		return validade;
 	}
 
-	public void setValidade(Date validade) {
+	public Produto setValidade(Date validade) {
 		this.validade = validade;
+		return this;
 	}
 }
