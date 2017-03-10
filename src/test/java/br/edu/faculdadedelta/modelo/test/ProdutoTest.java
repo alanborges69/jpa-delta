@@ -100,7 +100,7 @@ public class ProdutoTest {
 		
 		em.getTransaction().begin();
 		
-		produto = em.merge(produto);
+		em.persist(produto);
 		
 		em.getTransaction().commit();
 		

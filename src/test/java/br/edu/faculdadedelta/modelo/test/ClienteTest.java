@@ -27,7 +27,7 @@ public class ClienteTest {
 	private EntityManager em;
 	
 	@Test
-	public void deveSalvarProduto() {
+	public void deveSalvarCliente() {
 		Cliente cliente = new Cliente()
 				.setNome("Átilla Barros")
 				.setCpf(CPF_PADRAO);
@@ -36,7 +36,7 @@ public class ClienteTest {
 		
 		em.getTransaction().begin();
 		
-		cliente = em.merge(cliente);
+		em.persist(cliente);
 		
 		em.getTransaction().commit();
 		
@@ -46,7 +46,7 @@ public class ClienteTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void deveConsultarCpf() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		String filtro = "Barros";
 		
@@ -65,7 +65,7 @@ public class ClienteTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void deveConsultarClienteComIdNome() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		Query query = em.createQuery("SELECT new Cliente(c.id, c.nome) FROM Cliente c WHERE c.cpf = :cpf");
 		query.setParameter("cpf", CPF_PADRAO);
@@ -84,7 +84,7 @@ public class ClienteTest {
 	@Test
 	@SuppressWarnings("unchecked")
 	public void deveConsultarIdNome() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		Query query = em.createQuery("SELECT c.id, c.nome FROM Cliente c WHERE c.cpf = :cpf");
 		query.setParameter("cpf", CPF_PADRAO);
@@ -104,7 +104,7 @@ public class ClienteTest {
 	
 	@Test
 	public void deveVerificarExistenciaCliente() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		Query query = em.createQuery("SELECT COUNT(c.id) FROM Cliente c WHERE c.cpf = :cpf");
 		query.setParameter("cpf", CPF_PADRAO);
@@ -116,8 +116,8 @@ public class ClienteTest {
 	
 	@Test(expected = NonUniqueResultException.class)
 	public void naoDeveFuncionarSingleResultComMuitosRegistros() {
-		deveSalvarProduto();
-		deveSalvarProduto();
+		deveSalvarCliente();
+		deveSalvarCliente();
 		
 		Query query = em.createQuery("SELECT c.id FROM Cliente c WHERE c.cpf = :cpf");
 		query.setParameter("cpf", CPF_PADRAO);
@@ -129,8 +129,8 @@ public class ClienteTest {
 	
 	@Test(expected = NoResultException.class)
 	public void naoDeveFuncionarSingleResultComNenhumRegistro() {
-		deveSalvarProduto();
-		deveSalvarProduto();
+		deveSalvarCliente();
+		deveSalvarCliente();
 		
 		Query query = em.createQuery("SELECT c.id FROM Cliente c WHERE c.cpf = :cpf");
 		query.setParameter("cpf", "000.000.000-00");
@@ -142,7 +142,7 @@ public class ClienteTest {
 	
 	@Test
 	public void deveAcessarAtributoLazy() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		Cliente cliente = em.find(Cliente.class, 1L);
 		
@@ -153,7 +153,7 @@ public class ClienteTest {
 	
 	@Test(expected = LazyInitializationException.class)
 	public void naoDeveAcessarAtributoLazyForaEscopoEntityManager() {
-		deveSalvarProduto();
+		deveSalvarCliente();
 		
 		Cliente cliente = em.find(Cliente.class, 1L);
 		
