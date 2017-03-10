@@ -36,7 +36,7 @@ public class Venda extends BaseEntity<Long> {
 	@JoinColumn(name = "id_cliente", referencedColumnName = "id_cliente", insertable = true, updatable = false, nullable = false)
 	private Cliente cliente;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST })
 	@JoinTable(name = "venda_produto",
 			joinColumns = @JoinColumn(name = "id_venda"),
 			inverseJoinColumns = @JoinColumn(name = "id_produto"))
