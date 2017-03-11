@@ -17,8 +17,4 @@ public enum JPAUtil {
 	public EntityManager getEntityManager() {
 		return factory.createEntityManager();
 	}
-
-	public void close() {
-		factory.close();
-	}
 }
