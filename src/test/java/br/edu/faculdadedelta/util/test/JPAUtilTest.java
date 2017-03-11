@@ -14,18 +14,6 @@ public class JPAUtilTest {
 
 	private EntityManager em;
 	
-	@Before
-	public void instanciarEntityManager() {
-		em = JPAUtil.INSTANCE.getEntityManager();
-	}
-	
-	@After
-	public void fecharEntityManager() {
-		if (em.isOpen()) {
-			em.close();
-		}
-	}
-	
 	@Test
 	public void deveTerInstanciaDoEntityManagerDefinida() {
 		assertNotNull("instância do EntityManager não deve estar nula", em);
@@ -45,5 +33,17 @@ public class JPAUtilTest {
 		em.getTransaction().begin();
 		
 		assertTrue("transação deve estar aberta", em.getTransaction().isActive());
+	}
+
+	@Before
+	public void instanciarEntityManager() {
+		em = JPAUtil.INSTANCE.getEntityManager();
+	}
+	
+	@After
+	public void fecharEntityManager() {
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 }

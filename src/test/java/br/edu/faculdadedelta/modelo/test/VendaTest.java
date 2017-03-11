@@ -29,11 +29,8 @@ public class VendaTest {
 	public void deveSalvarVendaComRelacionamentosEmCascadta() {
 		Venda venda = criarVenda();
 		
-		Produto produto1 = criarProduto("Notebook", "Dell");
-		Produto produto2 = criarProduto("Mouse", "Razer");
-		
-		venda.getProdutos().add(produto1);
-		venda.getProdutos().add(produto2);
+		venda.getProdutos().add(criarProduto("Notebook", "Dell"));
+		venda.getProdutos().add(criarProduto("Mouse", "Razer"));
 		
 		assertTrue("não deve ter ID definido", venda.isTransient());
 		
@@ -53,11 +50,8 @@ public class VendaTest {
 	public void naoDeveFazerMergeEmObjetosTransient() {
 		Venda venda = criarVenda();
 		
-		Produto produto1 = criarProduto("Notebook", "Dell");
-		Produto produto2 = criarProduto("Mouse", "Razer");
-		
-		venda.getProdutos().add(produto1);
-		venda.getProdutos().add(produto2);
+		venda.getProdutos().add(criarProduto("Notebook", "Dell"));
+		venda.getProdutos().add(criarProduto("Mouse", "Razer"));
 		
 		assertTrue("não deve ter ID definido", venda.isTransient());
 		
@@ -65,7 +59,7 @@ public class VendaTest {
 		venda = em.merge(venda);
 		em.getTransaction().commit();
 		
-		fail("não deveria ter salvo (merge) uma venda nova com relacionamentos transient (Cliente e Produto)");
+		fail("não deveria ter salvo (merge) uma venda nova com relacionamentos transient");
 	}
 
 	@Test
@@ -73,8 +67,7 @@ public class VendaTest {
 		Venda venda = criarVenda("001.001.001-01");
 		
 		for (int i = 0; i < 10; i++) {
-			Produto produto = criarProduto("Produto " + i, "Marca " + i);
-			venda.getProdutos().add(produto);
+			venda.getProdutos().add(criarProduto("Produto " + i, "Marca " + i));
 		}
 		
 		em.getTransaction().begin();
@@ -99,7 +92,8 @@ public class VendaTest {
 
 		Long qtdProdutosDaVenda = (Long) query.getSingleResult();
 		
-		assertEquals("quantidade de produtos deve ser igual a quantidade da lista de produtos", qtdProdutosDaVenda.intValue(), qtdProdutosAdicionados);
+		assertEquals("quantidade de produtos deve ser igual a quantidade da lista de produtos", 
+				qtdProdutosDaVenda.intValue(), qtdProdutosAdicionados);
 	}
 	
 	@Before

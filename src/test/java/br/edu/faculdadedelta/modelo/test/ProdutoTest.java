@@ -4,7 +4,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 
@@ -20,8 +19,6 @@ import br.edu.faculdadedelta.util.JPAUtil;
 
 public class ProdutoTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ProdutoTest.class);
-	
 	private EntityManager em;
 	
 	@Before
@@ -76,7 +73,7 @@ public class ProdutoTest {
 	public void deveExcluirProduto() {
 		deveSalvarProduto();
 		
-		TypedQuery<Long> query = em.createQuery("SELECT MAX(p.id) FROM Produto p", Long.class).setMaxResults(1);
+		TypedQuery<Long> query = em.createQuery("SELECT MAX(p.id) FROM Produto p", Long.class);
 		Long id = query.getSingleResult();
 		
 		em.getTransaction().begin();
@@ -119,7 +116,5 @@ public class ProdutoTest {
 		entityManager.getTransaction().commit();
 
 		assertTrue("certifica que a base foi limpada", qtdRegistrosExcluidos > 0);
-		
-		LOGGER.info("============ Base de testes limpada (Tabela Produto) ============");
 	}
 }

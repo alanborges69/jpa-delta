@@ -35,9 +35,7 @@ public class ClienteTest {
 		assertTrue("não deve ter ID definido", cliente.isTransient());
 		
 		em.getTransaction().begin();
-		
 		em.persist(cliente);
-		
 		em.getTransaction().commit();
 		
 		assertFalse("deve ter ID definido", cliente.isTransient());
@@ -159,8 +157,7 @@ public class ClienteTest {
 		
 		assertNotNull("verifica se encontrou um registro", cliente);
 
-		// limpa o escopo do EntityManager
-		em.clear();
+		em.detach(cliente);
 		
 		cliente.getCompras().size();
 		
