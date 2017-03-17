@@ -11,20 +11,17 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.hibernate.LazyInitializationException;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 
+import br.edu.faculdadedelta.base.test.BaseTest;
 import br.edu.faculdadedelta.modelo.Cliente;
 import br.edu.faculdadedelta.util.JPAUtil;
 
-public class ClienteTest {
+public class ClienteTest extends BaseTest {
 
 	private static final String CPF_PADRAO = "010.188.991-10";
 	private static final Logger LOGGER = Logger.getLogger(ClienteTest.class);
-	
-	private EntityManager em;
 	
 	@Test
 	public void deveSalvarCliente() {
@@ -55,9 +52,7 @@ public class ClienteTest {
 		
 		assertFalse("verifica se há registros na lista", listaCpf.isEmpty());
 		
-		for (String cpf : listaCpf) {
-			LOGGER.info("\n\n=========== CPF: " + cpf + "\n\n");
-		}
+		listaCpf.forEach(cpf -> LOGGER.info("\n\n=========== CPF: " + cpf + "\n\n"));
 	}
 	
 	@Test
@@ -72,11 +67,11 @@ public class ClienteTest {
 		
 		assertFalse("verifica se há registros na lista", clientes.isEmpty());
 		
-		for (Cliente cliente : clientes) {
+		clientes.forEach(cliente -> {
 			assertNull("verifica que o cpf deve estar null", cliente.getCpf());
 			
 			cliente.setCpf(CPF_PADRAO);
-		}
+		});
 	}
 	
 	@Test
@@ -91,13 +86,13 @@ public class ClienteTest {
 		
 		assertFalse("verifica se há registros na lista", resultado.isEmpty());
 		
-		for (Object[] linha : resultado) {
+		resultado.forEach(linha -> {
 			assertTrue("verifica que o primeiro item é o ID", 	linha[0] instanceof Long);
 			assertTrue("verifica que o segundo item é o nome", 	linha[1] instanceof String);
 			
 			Cliente cliente = new Cliente((Long) linha[0], (String) linha[1]);
 			assertNotNull(cliente);
-		}
+		});
 	}
 	
 	@Test
@@ -162,18 +157,6 @@ public class ClienteTest {
 		cliente.getCompras().size();
 		
 		fail("deve disparar LazyInitializationException ao acessar atributo lazy de um objeto fora de escopo do EntityManager");
-	}
-	
-	@Before
-	public void instanciarEntityManager() {
-		em = JPAUtil.INSTANCE.getEntityManager();
-	}
-	
-	@After
-	public void fecharEntityManager() {
-		if (em.isOpen()) {
-			em.close();
-		}
 	}
 	
 	@AfterClass

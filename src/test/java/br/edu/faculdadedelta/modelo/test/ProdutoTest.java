@@ -4,35 +4,20 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
-import org.junit.After;
 import org.junit.AfterClass;
 
 import static org.junit.Assert.*;
 
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
 
+import br.edu.faculdadedelta.base.test.BaseTest;
 import br.edu.faculdadedelta.modelo.Produto;
 import br.edu.faculdadedelta.util.JPAUtil;
 
-public class ProdutoTest {
+public class ProdutoTest extends BaseTest {
 
-	private EntityManager em;
-	
-	@Before
-	public void instanciarEntityManager() {
-		em = JPAUtil.INSTANCE.getEntityManager();
-	}
-	
-	@After
-	public void fecharEntityManager() {
-		if (em.isOpen()) {
-			em.close();
-		}
-	}
-	
 	@Test
 	public void deveAlterarProduto() {
 		deveSalvarProduto();

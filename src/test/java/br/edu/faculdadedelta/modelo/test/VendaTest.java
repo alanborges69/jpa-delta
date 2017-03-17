@@ -8,22 +8,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.Test;
 
+import br.edu.faculdadedelta.base.test.BaseTest;
 import br.edu.faculdadedelta.modelo.Cliente;
 import br.edu.faculdadedelta.modelo.Produto;
 import br.edu.faculdadedelta.modelo.Venda;
 import br.edu.faculdadedelta.util.JPAUtil;
 
-public class VendaTest {
+public class VendaTest extends BaseTest {
 
 	private static final String CPF_PADRAO = "010.188.991-10";
 	private static final Logger LOGGER = Logger.getLogger(ClienteTest.class);
-	
-	private EntityManager em;
 	
 	@Test
 	public void deveSalvarVendaComRelacionamentosEmCascadta() {
@@ -41,9 +38,7 @@ public class VendaTest {
 		assertFalse("deve ter ID definido", venda.isTransient());
 		assertFalse("deve ter ID definido", venda.getCliente().isTransient());
 		
-		for (Produto produto : venda.getProdutos()) {
-			assertFalse("deve ter ID definido", produto.isTransient());
-		}
+		venda.getProdutos().forEach(produto -> assertFalse("deve ter ID definido", produto.isTransient()));
 	}
 	
 	@Test(expected = IllegalStateException.class)
@@ -95,19 +90,7 @@ public class VendaTest {
 		assertEquals("quantidade de produtos deve ser igual a quantidade da lista de produtos", 
 				qtdProdutosDaVenda.intValue(), qtdProdutosAdicionados);
 	}
-	
-	@Before
-	public void instanciarEntityManager() {
-		em = JPAUtil.INSTANCE.getEntityManager();
-	}
-	
-	@After
-	public void fecharEntityManager() {
-		if (em.isOpen()) {
-			em.close();
-		}
-	}
-	
+
 	@AfterClass
 	public static void deveLimparBaseTeste() {
 		EntityManager entityManager = JPAUtil.INSTANCE.getEntityManager();
