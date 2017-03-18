@@ -15,8 +15,7 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
-import org.hibernate.transform.AliasToBeanConstructorResultTransformer;
-import org.hibernate.transform.ResultTransformer;
+import org.hibernate.sql.JoinType;
 import org.hibernate.transform.Transformers;
 import org.junit.Test;
 
@@ -49,19 +48,33 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarQuantidadeVendasPorCliente() {
 		salvarVendas(3);
 		
-		Criteria criteria = createCriteria(Venda.class, "v");
-		// JOIN
-		criteria.createAlias("v.cliente", "c");
-		// WHERE =
-		criteria.add(Restrictions.eq("c.cpf", CPF_PADRAO));
-		// COUNT(*)
-		criteria.setProjection(Projections.rowCount());
+		Criteria criteria = createCriteria(Venda.class, "v")
+				// JOIN
+				.createAlias("v.cliente", "c")
+				// WHERE =
+				.add(Restrictions.eq("c.cpf", CPF_PADRAO))
+				// COUNT(*)
+				.setProjection(Projections.rowCount());
 		
 		Long qtdRegistros = (Long) criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.uniqueResult();
 		
 		assertTrue("verifica se a quantidade de vendas é pelo menos 3", qtdRegistros >= 3);
+	}
+	
+	@Test
+	public void deveConsultarMaiorIdCliente() {
+		salvarClientes(3);
+		
+		Criteria criteria = createCriteria(Cliente.class, "c")
+				.setProjection(Projections.max("c.id"));
+		
+		Long maiorId = (Long) criteria
+				.setResultTransformer(Criteria.PROJECTION)
+				.uniqueResult();
+		
+		assertTrue("verifica se o ID é maior que 2 (salvou 3 clientes)", maiorId > 3);
 	}
 	
 	@Test
@@ -129,10 +142,10 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarClientesChaveValor() {
 		salvarClientes(5);
 		
-		ProjectionList projection = Projections.projectionList();
-		// SELECT field_a, field_b, field_c
-		projection.add(Projections.property("c.id").as("id"));
-		projection.add(Projections.property("c.nome").as("nome"));
+		ProjectionList projection = Projections.projectionList()
+				// SELECT field_a, field_b, field_c
+				.add(Projections.property("c.id").as("id"))
+				.add(Projections.property("c.nome").as("nome"));
 		
 		Criteria criteria = createCriteria(Cliente.class, "c")
 				.setProjection(projection);
@@ -177,9 +190,9 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarProdutosContendoParteDoNome() {
 		salvarProdutos(3);
 		
-		Criteria criteria = createCriteria(Produto.class, "p");
-		// WHERE ILIKE %%
-		criteria.add(Restrictions.ilike("p.nome", "book", MatchMode.ANYWHERE));
+		Criteria criteria = createCriteria(Produto.class, "p")
+				// WHERE ILIKE '%string%'
+				.add(Restrictions.ilike("p.nome", "book", MatchMode.ANYWHERE));
 		
 		List<Produto> produtos = criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -195,14 +208,13 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarIdENomeProduto() {
 		salvarProdutos(1);
 		
-		ProjectionList projection = Projections.projectionList();
+		ProjectionList projection = Projections.projectionList()
+				// SELECT field_a, field_b, field_c
+				.add(Projections.property("p.id").as("id"))
+				.add(Projections.property("p.nome").as("nome"));
 		
-		projection.add(Projections.property("p.id").as("id"));
-		projection.add(Projections.property("p.nome").as("nome"));
-		
-		Criteria criteria = createCriteria(Produto.class, "p");
-		// SELECT field_a, field_b, field_c
-		criteria.setProjection(projection);
+		Criteria criteria = createCriteria(Produto.class, "p")
+					.setProjection(projection);
 		
 		List<Object[]> produtos = criteria
 				.setResultTransformer(Criteria.PROJECTION)
@@ -221,10 +233,10 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarIdENomeConverterCliente() {
 		salvarClientes(3);
 		
-		ProjectionList projection = Projections.projectionList();
-		// SELECT field_a, field_b, field_c
-		projection.add(Projections.property("c.id").as("id"));
-		projection.add(Projections.property("c.nome").as("nome"));
+		ProjectionList projection = Projections.projectionList()
+				// SELECT field_a, field_b, field_c
+				.add(Projections.property("c.id").as("id"))
+				.add(Projections.property("c.nome").as("nome"));
 		
 		Criteria criteria = createCriteria(Cliente.class, "c")
 				.setProjection(projection);
@@ -266,6 +278,26 @@ public class RelatorioTest extends BaseTest {
 		assertTrue("verifica se a quantidade de vendas é pelo menos 1", vendas.size() >= 1);
 		
 		vendas.forEach(venda -> assertFalse("trouxe os itens corretamente", venda.getCliente().isTransient()));
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void deveConsultarVendasENomeClienteCasoExista() {
+		salvarVendas(1);
+		
+		Criteria criteria = createCriteria(Venda.class, "v")
+				// LEFT JOIN
+				.createAlias("v.cliente", "c", JoinType.LEFT_OUTER_JOIN)
+				// WHERE ILIKE 'string%'
+				.add(Restrictions.ilike("c.nome", "Átilla", MatchMode.START));
+		
+		List<Venda> vendas = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertTrue("verifica se a quantidade de vendas é pelo menos 1", vendas.size() >= 1);
+		
+		vendas.forEach(venda -> assertFalse("trouxe os itens corretamente", venda.isTransient()));
 	}
 	
 	private void salvarClientes(int quantidade) {
