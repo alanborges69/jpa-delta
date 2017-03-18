@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.hibernate.Criteria;
 import org.hibernate.criterion.DetachedCriteria;
@@ -14,6 +15,9 @@ import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.transform.AliasToBeanConstructorResultTransformer;
+import org.hibernate.transform.ResultTransformer;
+import org.hibernate.transform.Transformers;
 import org.junit.Test;
 
 import br.edu.faculdadedelta.base.test.BaseTest;
@@ -102,6 +106,53 @@ public class RelatorioTest extends BaseTest {
 	
 	@Test
 	@SuppressWarnings("unchecked")
+	public void deveConsultarDezPrimeirosProdutos() {
+		salvarProdutos(20);
+		
+		Criteria criteria = createCriteria(Produto.class, "p")
+				// OFFSET
+				.setFirstResult(1)
+				// LIMIT
+				.setMaxResults(10);
+		
+		List<Produto> notebooks = criteria
+				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+				.list();
+		
+		assertTrue("verifica se a quantidade de notebooks é 10", notebooks.size() == 10);
+		
+		notebooks.forEach(notebook -> assertFalse(notebook.isTransient()));
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void deveConsultarClientesChaveValor() {
+		salvarClientes(5);
+		
+		ProjectionList projection = Projections.projectionList();
+		// SELECT field_a, field_b, field_c
+		projection.add(Projections.property("c.id").as("id"));
+		projection.add(Projections.property("c.nome").as("nome"));
+		
+		Criteria criteria = createCriteria(Cliente.class, "c")
+				.setProjection(projection);
+		
+		List<Map<String, Object>> clientes = criteria
+				.setResultTransformer(Criteria.ALIAS_TO_ENTITY_MAP)
+				.list();
+		
+		assertTrue("verifica se a quantidade de cliente é pelo menos 5", clientes.size() >= 5);
+		
+		clientes.forEach(clienteMap -> {
+			clienteMap.forEach((chave, valor) -> {
+				assertTrue("chave deve ser String", chave instanceof String);
+				assertTrue("valor deve ser String ou Long", valor instanceof String || valor instanceof Long);
+			});
+		});
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
 	public void deveConsultarNotebooksDellOuSamsung() {
 		salvarProdutos(3);
 		
@@ -147,7 +198,7 @@ public class RelatorioTest extends BaseTest {
 		ProjectionList projection = Projections.projectionList();
 		
 		projection.add(Projections.property("p.id").as("id"));
-		projection.add(Projections.property("p.nome").as("id"));
+		projection.add(Projections.property("p.nome").as("nome"));
 		
 		Criteria criteria = createCriteria(Produto.class, "p");
 		// SELECT field_a, field_b, field_c
@@ -162,6 +213,32 @@ public class RelatorioTest extends BaseTest {
 		produtos.forEach(produto -> {
 			assertTrue("primeiro item deve ser o ID", 	produto[0] instanceof Long);
 			assertTrue("primeiro item deve ser o nome", produto[1] instanceof String);
+		});
+	}
+	
+	@Test
+	@SuppressWarnings("unchecked")
+	public void deveConsultarIdENomeConverterCliente() {
+		salvarClientes(3);
+		
+		ProjectionList projection = Projections.projectionList();
+		// SELECT field_a, field_b, field_c
+		projection.add(Projections.property("c.id").as("id"));
+		projection.add(Projections.property("c.nome").as("nome"));
+		
+		Criteria criteria = createCriteria(Cliente.class, "c")
+				.setProjection(projection);
+		
+		List<Cliente> clientes = criteria
+				.setResultTransformer(Transformers.aliasToBean(Cliente.class))
+				.list();
+		
+		assertTrue("verifica se a quantidade de clientes é pelo menos 3", clientes.size() >= 3);
+		
+		clientes.forEach(cliente -> {
+			assertTrue("ID deve estar preenchido", cliente.getId() != null);
+			assertTrue("Nome deve estar prenchido", cliente.getNome() != null);
+			assertTrue("CPF não deve estar preenchido", cliente.getCpf() == null);
 		});
 	}
 	
