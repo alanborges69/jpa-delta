@@ -36,6 +36,7 @@ public class RelatorioTest extends BaseTest {
 		Criteria criteria = createCriteria(Cliente.class, "c");
 		
 		List<Cliente> clientes = criteria
+				// SELECT DISTINCT
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
 				.list();
 		
@@ -68,6 +69,7 @@ public class RelatorioTest extends BaseTest {
 		salvarClientes(3);
 		
 		Criteria criteria = createCriteria(Cliente.class, "c")
+				// SELECT MAX
 				.setProjection(Projections.max("c.id"));
 		
 		Long maiorId = (Long) criteria
@@ -84,11 +86,11 @@ public class RelatorioTest extends BaseTest {
 		Calendar ultimaSemana = Calendar.getInstance();
 		ultimaSemana.add(Calendar.WEEK_OF_YEAR, -1);
 		
-		Criteria criteria = createCriteria(Venda.class, "v");
-		// WHERE BETWEEN
-		criteria.add(Restrictions.between("v.dataHora", ultimaSemana.getTime(), new Date()));
-		// COUNT(*)
-		criteria.setProjection(Projections.rowCount());
+		Criteria criteria = createCriteria(Venda.class, "v")
+				// WHERE BETWEEN
+				.add(Restrictions.between("v.dataHora", ultimaSemana.getTime(), new Date()))
+				// COUNT(*)
+				.setProjection(Projections.rowCount());
 		
 		Long qtdRegistros = (Long) criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
@@ -102,11 +104,11 @@ public class RelatorioTest extends BaseTest {
 	public void deveConsultarNotebooks() {
 		salvarProdutos(3);
 		
-		Criteria criteria = createCriteria(Produto.class, "p");
-		// WHERE IN
-		criteria.add(Restrictions.in("p.nome", "Notebook", "Netbook", "Macbook"));
-		// ORDER BY
-		criteria.addOrder(Order.asc("p.fabricante"));
+		Criteria criteria = createCriteria(Produto.class, "p")
+				// WHERE IN
+				.add(Restrictions.in("p.nome", "Notebook", "Netbook", "Macbook"))
+				// ORDER BY
+				.addOrder(Order.asc("p.fabricante"));
 		
 		List<Produto> notebooks = criteria
 				.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
