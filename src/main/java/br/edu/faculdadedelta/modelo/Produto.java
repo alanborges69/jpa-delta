@@ -49,6 +49,12 @@ public class Produto extends BaseEntity<Long> {
 		this.id = id;
 	}
 
+	public Produto(Long id, String nome) {
+		super();
+		this.id = id;
+		this.nome = nome;
+	}
+
 	public Long getId() {
 		return id;
 	}
